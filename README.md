@@ -17,6 +17,15 @@ A Discord.js bot with configurable currencies and prices, member transfers, mode
 5. Deploy slash commands with `npm run deploy-commands`.
 6. Start the bot with `npm start`.
 
+## Deploying on Railway
+
+1. Create a Railway project from this GitHub repository and deploy the service.
+2. In the service's **Variables** settings, add `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_GUILD_ID`, and `BOT_OWNER_ID`. Add `GROQ_API_KEY` if you want to enable `!ai`. Add secrets in Railway, not in source files or GitHub.
+3. Add a Railway Volume mounted at `/data`, then set `DATABASE_PATH` to `/data/currency.sqlite`. Keep one running replica so multiple bot instances do not write to separate SQLite databases.
+4. The included `railway.json` starts the bot with `npm start` and restarts it after failures. The project requires Node.js 24 or newer. This bot uses the Discord Gateway and does not need an HTTP port or public domain.
+5. To register slash commands after setting the Railway variables, link the Railway CLI to this project and run `railway run npm run deploy-commands` from the project directory. Re-run this command after changing slash command definitions.
+6. Check the service's deployment logs in Railway if it does not connect. Confirm the Discord bot token is current and the required privileged intents are enabled in the Discord Developer Portal.
+
 Slash commands are registered to the configured guild for quick testing. Prefix commands default to `!`; set `COMMAND_PREFIX` in `.env` to customize it. Set `TRANSFER_CAPTCHA_VARIANT_PERCENT` to a whole number from 0 to 100 to choose the chance of using the alternate CAPTCHA design (default 50%; the rest use the current design). Configure one guild per bot database.
 
 Use `/auditlog channel:#channel` or `!auditlog #channel` to configure the server's separate action-log channel. The bot posts member departures (username and user ID), member role assignments/removals, role creation/updates/deletions, channel creation/updates/deletions, and server setting changes there, with the executor's username and ID when Discord has a matching audit-log entry. Grant the bot **View Audit Log** in the server, plus permission to view and send messages and embed links in the configured channel. Scam stories remain separate and are posted publicly to the scam-alert channel configured through `/setup` or `!setup alert #channel`.
